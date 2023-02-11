@@ -2,11 +2,8 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { Main, CreatePost } from "./pages";
 import { useState } from "react";
 import { logo } from "./assets";
-import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <header
