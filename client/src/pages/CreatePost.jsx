@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import { FormField, Loader } from "../components/index";
 import { getRandomPrompt } from "../utils";
 
 import { preview } from "../assets";
 
-function CreatePost() {
+const CreatePost = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -30,7 +30,8 @@ function CreatePost() {
         });
 
         const data = await response.json();
-        setForm({ ...form, photo: `data:images/jpeg;base64, ${data.photo}` });
+
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (error) {
         alert(error);
       } finally {
@@ -51,9 +52,11 @@ function CreatePost() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(form),
+          body: JSON.stringify({ ...form }),
         });
+
         await response.json();
+      
         navigate("/");
       } catch (err) {
         alert(err);
@@ -153,6 +156,6 @@ function CreatePost() {
       </form>
     </section>
   );
-}
+};
 
 export default CreatePost;

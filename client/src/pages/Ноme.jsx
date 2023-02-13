@@ -7,7 +7,7 @@ const RenderCard = ({ data, title }) => {
     return data.map((post) => <Card key={post.id} {...post} />);
   }
   return (
-    <h2 className="mt-5 font-bold  text-[#6449ff] text-xl uppercase">
+    <h2 className="mt-5  w-full font-bold  text-[#6449ff] text-xl uppercase">
       {title}
     </h2>
   );
@@ -17,20 +17,21 @@ const Main = () => {
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState(null);
   const [searchText, setSearchText] = useState("");
-  console.log("allPosts", allPosts);
+  const [searchResult, setSearchResults] = useState("");
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8080/api/v1/post", {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       if (response.ok) {
         const result = await response.json();
-        setAllPosts(result.data.reverse);
+        setAllPosts(result.data.reverse());
       }
     } catch (err) {
       alert(err);
@@ -43,8 +44,24 @@ const Main = () => {
     fetchPosts();
   }, []);
 
+  const handleSearch = (e) => {
+    clearTimeout(searchTimeout);
+    setSearchText(e.target.value);
+
+    setSearchTimeout(
+      setTimeout(() => {
+        const result = allPosts.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchText.toLocaleLowerCase()) ||
+            item.prompt.toLowerCase().includes(searchText.toLocaleLowerCase())
+        );
+        setSearchResults(result);
+      }, 500)
+    );
+  };
+
   return (
-    <section className="max-w-7xl mx-auto">
+    <section className="max-w-7xl mx-auto ">
       <div>
         <h1 className="font-semibold text-[#222328] text-[32px]">
           The Community Showcase
@@ -55,7 +72,14 @@ const Main = () => {
         </p>
       </div>
       <div className="mt-16">
-        <FormField />
+        <FormField
+          labelName="Search posts"
+          type="text"
+          name="text"
+          placeholder="Search posts"
+          value={searchText}
+          handleChange={handleSearch}
+        />
       </div>
       <div className="mt-10">
         {loading ? (
@@ -65,15 +89,14 @@ const Main = () => {
             {searchText && (
               <h2 className="font-medium text-[#666e75] text-xl mb-3">
                 Showing result for
-                <span className="text-[#222328]">{searchText}</span>
+                <span className="text-[#222328] ml-[5px]">{searchText}</span>
               </h2>
             )}
 
-            <div className="gride lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
+            <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchText ? (
                 <RenderCard
-                  data={[]}
-                  // data="searchedResults"
+                  data={searchResult}
                   title="No search results found"
                 />
               ) : (
