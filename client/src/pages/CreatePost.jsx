@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 import { FormField, Loader } from "../components/index";
 import { getRandomPrompt } from "../utils";
@@ -17,6 +18,9 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [generatingImg, setGeneratingImg] = useState(false);
 
+  const notifyError = () => toast("Error, try again.");
+  const notifyEnterPrompt = () => toast.success("Please enter a prompt");
+
   const generateImage = async () => {
     if (form.prompt) {
       try {
@@ -28,7 +32,7 @@ const CreatePost = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ prompt: form.prompt }),
+            body: JSON.stringify({ prompt: form.prompt.trim() }),
           }
         );
 
@@ -36,18 +40,20 @@ const CreatePost = () => {
 
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (error) {
-        alert(error);
+        notifyError();
+        console.log(error);
       } finally {
         setGeneratingImg(false);
       }
     } else {
-      alert("Please enter a prompt");
+      notifyEnterPrompt();
     }
   };
   const handleSubmit = async (e) => {
+    const { name, prompt, photo } = form;
     e.preventDefault();
 
-    if (form.prompt && form.photo) {
+    if (prompt && photo) {
       setLoading(true);
       try {
         const response = await fetch(
@@ -57,7 +63,7 @@ const CreatePost = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ ...form }),
+            body: JSON.stringify({ name, prompt, photo }),
           }
         );
 
@@ -65,14 +71,16 @@ const CreatePost = () => {
 
         navigate("/");
       } catch (err) {
-        alert(err);
+        notifyError();
+        console.log(err);
       } finally {
         setLoading(false);
       }
     } else {
-      alert("Please enter a prompt");
+      notifyEnterPrompt();
     }
   };
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -138,6 +146,7 @@ const CreatePost = () => {
           </div>
         </div>
         <div className="mt-5 flex gap-5">
+          <Toaster position="bottom-left" reverseOrder={false} />
           <button
             type="button"
             onClick={generateImage}

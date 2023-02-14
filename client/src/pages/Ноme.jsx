@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 import { Card, FormField, Loader } from "../components/index";
 
 const RenderCard = ({ data, title }) => {
   if (data?.length > 0) {
-    return data.map((post) => <Card key={post.id} {...post} />);
+    return data.map((post) => <Card key={post._id} {...post} />);
   }
   return (
     <h2 className="mt-5  w-full font-bold  text-[#6449ff] text-xl uppercase">
@@ -19,6 +20,10 @@ const Main = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResult, setSearchResults] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [error, setError] = useState("");
+
+  const notifyError = () => toast("Error, try again.");
+  const notifySuccess = () => toast.success("Success!");
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -35,9 +40,11 @@ const Main = () => {
       if (response.ok) {
         const result = await response.json();
         setAllPosts(result.data.reverse());
+        notifySuccess();
       }
     } catch (err) {
-      alert(err);
+      setError(err);
+      notifyError();
     } finally {
       setLoading(false);
     }
@@ -103,7 +110,14 @@ const Main = () => {
                   title="No search results found"
                 />
               ) : (
-                <RenderCard data={allPosts} title="No posts found" />
+                <>
+                  {error ? (
+                    <Toaster position="top-left" reverseOrder={false} />
+                  ) : (
+                    <Toaster position="bottom-left" reverseOrder={false} />
+                  )}
+                  <RenderCard data={allPosts} title="No posts found" />
+                </>
               )}
             </div>
           </>
