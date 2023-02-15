@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { Helmet } from "react-helmet";
 
 import { FormField, Loader } from "../components/index";
 import { getRandomPrompt } from "../utils";
@@ -94,6 +95,9 @@ const CreatePost = () => {
 
   return (
     <section className="max-w-7xl mx-auto">
+      <Helmet>
+        <title> DALL-E AI </title>
+      </Helmet>
       <div>
         <h1 className="font-semibold text-[#222328] text-[32px]">Create</h1>
         <p className="mt-2 text-[#666e75] text-[14px] max-w-[500px]">

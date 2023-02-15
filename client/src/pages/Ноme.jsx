@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { Helmet } from "react-helmet";
 
 import { Card, FormField, Loader } from "../components/index";
 
@@ -72,6 +73,9 @@ const Main = () => {
 
   return (
     <section className="max-w-7xl mx-auto ">
+      <Helmet>
+        <title> The Community Showcase</title>
+      </Helmet>
       <div>
         <h1 className="font-semibold text-[#222328] text-[32px]">
           The Community Showcase
