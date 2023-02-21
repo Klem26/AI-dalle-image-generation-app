@@ -1,6 +1,7 @@
 import React from "react";
-import { download } from "../assets";
 import { downloadImg } from "../utils";
+
+import { download } from "../assets";
 import defaultImg from "../assets/defaultImg.jpg";
 
 const Card = ({ _id, name, prompt, photo }) => {
